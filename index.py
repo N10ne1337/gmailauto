@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler
+   from http.server import HTTPServer
    import requests
    import random
-   import time
    from fake_useragent import UserAgent
 
    class Handler(BaseHTTPRequestHandler):
@@ -10,6 +10,16 @@ from http.server import BaseHTTPRequestHandler
            self.send_header('Content-type', 'text/plain')
            self.end_headers()
            self.wfile.write(b"Gmail Auto-Registrar is running!\n")
+
+       def do_POST(self):
+           content_length = int(self.headers['Content-Length'])
+           post_data = self.rfile.read(content_length).decode('utf-8')
+           self.send_response(200)
+           self.send_header('Content-type', 'text/plain')
+           self.end_headers()
+           self.wfile.write(b"Received POST request\n")
+
+           # Регистрация аккаунта
            register_gmail_account()
 
    def generate_user_data():
@@ -48,6 +58,5 @@ from http.server import BaseHTTPRequestHandler
            print(f"Ошибка: {e}")
 
    if __name__ == "__main__":
-       from http.server import HTTPServer
        server = HTTPServer(('0.0.0.0', 3000), Handler)
        server.serve_forever()
